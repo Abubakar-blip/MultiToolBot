@@ -1,0 +1,84 @@
+ 
+import discord
+from discord.ext import commands
+import os
+import wolframalpha
+import requests
+import json
+import random
+from replit import db
+import urllib.request
+#from aylienapiclient import textapi
+
+
+#client = discord.Client()
+client = commands.Bot(command_prefix = '!')
+answer = ""
+appID = 'id'
+Wclient = wolframalpha.Client(appID)
+
+ID = os.environ['ide']
+
+@client.event
+async def on_ready():
+  print('We have logged in as {0.user}'.format(client))
+
+#@client.event
+#async def on_message(message):
+ #  if message.author == client.user:
+  #  return
+  #msg = message.content
+  #if msg.startswith("$wolfram"):
+   # msg = msg.replace("$wolfram","")
+    #result = (Wclient.query(msg))
+    #answer = next(result.results).text
+    #print(answer)
+
+@client.command()
+async def wolfram(ctx, *args):
+  for arg in args:
+    if '+' in arg:
+      arg.replace('+', "plus")
+  print(args) 
+  q = '+'.join(args)
+  print(q)
+
+
+  url = f"https://api.wolframalpha.com/v1/result?appid={ID}&i={q}%3f"
+ 
+  response = requests.get(url)
+  print(args)
+
+  if response.status_code == 501:
+    await ctx.send("Cannot process")
+    return
+  await ctx.send(response.text)
+
+#@client.command()
+#async def paraphrase(ctx, *args):
+  
+@client.command()
+async def wiki(ctx, *args):
+  
+  url = f"https://en.wikipedia.org/w/api.php?action=opensearch&limit=1&format=json&search={args}"
+ 
+  req = urllib.request.urlopen(url).read().decode()
+  data = json.loads(req)
+  await ctx.send(data)
+
+
+
+
+
+
+    
+client.run(os.environ['key'])
+  
+  #q = ''
+ # for arg in args:
+  # if '+' in arg:
+   # q += arg.replace('+', "%2B") 
+    #q = q.strip('+')
+    #q.replace(" ", "")
+    #print(args)
+    #print(q)
